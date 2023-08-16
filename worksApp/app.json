@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "worksApp",
+    "slug": "worksApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "81f2b9d1-c131-4cd8-bf3e-e11e745d0e06"
+      }
+    }
+  },
+  "name": "worksApp"
+}
