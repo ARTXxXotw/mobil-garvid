@@ -6,6 +6,9 @@ import {
   TextInput,
   Image,
   ScrollView,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -21,28 +24,28 @@ const ChatScreen = (props) => {
   const [rooms, setRooms] = useState([]);
   useEffect(() => {
     const getEmail = async () => {
-      const token =  JSON.parse( await AsyncStorage.getItem('token'))
+      const token = JSON.parse(await AsyncStorage.getItem("token"));
       // console.log(token);
       axios
-      .get("https://markazback2.onrender.com/auth/oneuser", {
-        headers: { Authorization: "Bearer " + token },
-      })
-      .then((res1) => {
-        // console.log(res1.data,"ssssssssssssss");
-        // Swal.fire(res1.data[0].email)
-        let email = res1.data[0].email;
-        socket.emit("authenticate", { email });
-        setEmail(email);
-        // Swal.fire("ishladi")
-        //     socket.emit("authenticate", { email });
-        //         const getRooms = async () => {
-        socket.emit("get_rooms", { email });
-      })
-      .catch((err) => {
-        console.log(err)
-      });
+        .get("https://markazback2.onrender.com/auth/oneuser", {
+          headers: { Authorization: "Bearer " + token },
+        })
+        .then((res1) => {
+          // console.log(res1.data,"ssssssssssssss");
+          // Swal.fire(res1.data[0].email)
+          let email = res1.data[0].email;
+          socket.emit("authenticate", { email });
+          setEmail(email);
+          // Swal.fire("ishladi")
+          //     socket.emit("authenticate", { email });
+          //         const getRooms = async () => {
+          socket.emit("get_rooms", { email });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
-    getEmail()
+    getEmail();
     socket.on("load_rooms", (data) => {
       setRooms(data);
       console.log(data);
@@ -61,61 +64,121 @@ const ChatScreen = (props) => {
           )
         })
       }*/}
-                   {rooms.map((item,key) => {
-                let a = item;
-                if (a !== null) {
-                  const [email1, email2] = a.split("_");
-           
-                  const displayName = email1 === email ? email2 : email1;
-                  return(
-                    <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: 10,
-                    }}
-                  >
-                    <Image
-                      source={{
-                        uri: "https://icon-library.com/images/no-user-image-icon/no-user-image-icon-27.jpg",
-                      }}
-                      style={{ width: 70, height: 70, borderRadius: 50 }}
-                    />
-                    <View style={{ width: "60%" }}>
-                      <Text style={{ fontSize: 20 }} numberOfLines={1}>
-                     {displayName}
-                      </Text>
-                    </View>
-                  </View>
-                  )
-}})}
+      {rooms.map((item, key) => {
+        let a = item;
+        if (a !== null) {
+          const [email1, email2] = a.split("_");
 
+          const displayName = email1 === email ? email2 : email1;
+          return (
+            <TouchableOpacity onPress={() => props.navigation.navigate("User")}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: 10,
+                }}
+              >
+                <Image
+                  source={{
+                    uri: "https://icon-library.com/images/no-user-image-icon/no-user-image-icon-27.jpg",
+                  }}
+                  style={{ width: 70, height: 70, borderRadius: 50 }}
+                />
+                <View style={{ width: "70%" }}>
+                  <Text style={{ fontSize: 16 }} numberOfLines={1}>
+                    {displayName}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        }
+      })}
     </ScrollView>
   );
 };
 
 const UserScreen = ({ navigation }) => {
+  const height = Dimensions.get("window");
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
       navigation.getParent().setOptions({ tabBarStyle: { display: "flex" } });
     };
   }, []);
+
+  // onPress={() => {
+  //         navigation
+  //           .getParent()
+  //           .setOptions({ tabBarStyle: { display: "flex" } });
+  //         navigation.goBack();
+  //       }}
+
   return (
-    <View>
-      <TouchableOpacity
-        onPress={() => {
-          navigation
-            .getParent()
-            .setOptions({ tabBarStyle: { display: "flex" } });
-          navigation.goBack();
-        }}
-      >
-        <Text>Go Back</Text>
-      </TouchableOpacity>
-      <Text></Text>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "android" ? undefined : "padding"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS == "android" ? 0 : 100}
+    >
+        <ScrollView style={{ flexGrow: 1, height: '100%' }}>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+          <Text>asdas</Text>
+        </ScrollView>
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#fff",
+            justifyContent: "space-between",
+            padding: 5,
+            // position: "absolute",
+            // top: height.height / 1.3,
+            height: 62,
+          }}
+        >
+          <TextInput
+            placeholder="send to "
+            style={{
+              width: "85%",
+              height: 45,
+              borderWidth: 1,
+              paddingLeft: 10,
+            }}
+          />
+          <Button title="send" />
+        </View>
+    </KeyboardAvoidingView>
   );
 };
 

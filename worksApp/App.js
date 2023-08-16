@@ -143,6 +143,7 @@ import {
   Button,
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
@@ -310,7 +311,9 @@ export default function App() {
             </View>
           ) : (
             <NavigationContainer>
-              <Navigator />
+            <KeyboardAvoidingView behavior="height" style={{flex:1}}>
+            <Navigator />
+            </KeyboardAvoidingView>
             </NavigationContainer>
           )}
         </View>
