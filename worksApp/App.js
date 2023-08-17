@@ -144,6 +144,8 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -229,9 +231,12 @@ export default function App() {
     console.log(a.data);
   };
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView 
+    behavior={Platform.OS == "android" ? undefined : "padding"}
+    style={{ flex: 1 }}
+    keyboardVerticalOffset={Platform.OS == "android" ? 0 : 100}>
       {state == null ? (
-        <View>
+        <ScrollView>
           <View
             style={{
               minHeight: "100%",
@@ -286,7 +291,7 @@ export default function App() {
             <Text>{username + " " + password}</Text>
             <Button title="Вход" onPress={onSave} />
           </View>
-        </View>
+        </ScrollView>
       ) : (
         <View
           style={{
@@ -311,9 +316,7 @@ export default function App() {
             </View>
           ) : (
             <NavigationContainer>
-            <KeyboardAvoidingView behavior="height" style={{flex:1}}>
-            <Navigator />
-            </KeyboardAvoidingView>
+              <Navigator />
             </NavigationContainer>
           )}
         </View>
@@ -383,7 +386,7 @@ borderWidth: 1,
         </NavigationContainer>
       )}*/}
       <StatusBar style="default" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

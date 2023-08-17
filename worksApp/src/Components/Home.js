@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Link, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Icons from "react-native-vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -41,6 +41,7 @@ const OpenURLButton = ({ url, children }) => {
 };
 
 export default function Home() {
+const navigation = useNavigation()
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -49,49 +50,7 @@ export default function Home() {
         options={{
           headerRight: () => {
             return (
-              <View style={{ position: 'relative', marginRight: 20 }}>
-              <FontAwesome5 name="cart-plus" size={26} color="black" />
-                <View
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  width: "100%",
-                  height: "100%",
-                  opacity: 0,
-                  zIndex: 3,
-                }}
-              >
-                <OpenURLButton url={supportedURL}>
-                  Open Supported URL
-                </OpenURLButton>
-              </View>
-              </View>
-              // <Entypo
-              //   onPress={() => {
-              //     Alert.alert(
-              //       "Eslatma",
-              //       "Kurslarni qo'shish uchun ularni sotib oling!",
-              //       [
-              //         {
-              //           text: "Sotib olish",
-              //           onPress: () => {
-              //             window.location.href =
-              //               "https://markazback2.onrender.com/";
-              //           },
-              //         },
-              //         {
-              //           text: "Bekor qilish",
-              //           onPress: () => console.log("no00"),
-              //         },
-              //       ]
-              //     );
-              //   }}
-              //   style={{ marginRight: 10 }}
-              //   name="dots-three-horizontal"
-              //   size={24}
-              //   color="black"
-              // />
+              <FontAwesome5 name="cart-plus" size={26} marginRight={20} color="black" onPress={() => navigation.navigate('postPage')} />
             );
           },
         }}
@@ -99,8 +58,17 @@ export default function Home() {
       <Stack.Screen name="Course" component={ViewPage2} />
       <Stack.Screen name="BonusPage" component={BonusPage} />
       <Stack.Screen name="ThemePage" component={ThemePage} />
+      <Stack.Screen name="postPage" component={postPage} />
     </Stack.Navigator>
   );
+}
+
+const postPage = () => {
+  return(
+    <View>
+    <Text>ad</Text>
+    </View>
+  )
 }
 
 const ThemePage = () => {

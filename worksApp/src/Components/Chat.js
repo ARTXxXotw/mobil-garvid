@@ -16,12 +16,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import io from "socket.io-client";
 import socketServices from "../server/socketServices";
+import { useNavigation, useRoute } from "@react-navigation/native";
 const socket = io.connect("https://markazback2.onrender.com");
 const Stack = createStackNavigator();
 
 const ChatScreen = (props) => {
   const [email, setEmail] = useState("");
   const [rooms, setRooms] = useState([]);
+  const navigation = useNavigation()
   useEffect(() => {
     const getEmail = async () => {
       const token = JSON.parse(await AsyncStorage.getItem("token"));
@@ -48,22 +50,11 @@ const ChatScreen = (props) => {
     getEmail();
     socket.on("load_rooms", (data) => {
       setRooms(data);
-      console.log(data);
+      // console.log(data);
     });
   }, []);
   return (
     <ScrollView>
-      {/*<View style={{ flexDirection: "row" }}>
-        <TextInput onChangeText={text => setMessage(text)} value={message} style={{ borderWidth: 1, width: "75%" }} />
-        <Button title="send" onPress={sendMessage} />
-      </View>
-      {
-        data.map((val, i) => {
-          return (
-            <Text style={{ fontSize: 19, marginBottom: 8, fontWeight: 'bold' }}>{val}</Text>
-          )
-        })
-      }*/}
       {rooms.map((item, key) => {
         let a = item;
         if (a !== null) {
@@ -71,7 +62,13 @@ const ChatScreen = (props) => {
 
           const displayName = email1 === email ? email2 : email1;
           return (
-            <TouchableOpacity onPress={() => props.navigation.navigate("User")}>
+            <TouchableOpacity onPress={() => {
+              navigation.navigate('User', { name: displayName })
+              // const helo = async() => {
+              // await AsyncStorage.setItem('userName', displayName)
+              // }
+              // helo()
+            }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -100,9 +97,16 @@ const ChatScreen = (props) => {
   );
 };
 
-const UserScreen = ({ navigation }) => {
+const UserScreen = () => {
+  const [ namePage, setNamePage ] = useState("User")
   const height = Dimensions.get("window");
+  const route = useRoute()
+  const navigation = useNavigation()
+  navigation.setOptions({ title: route.params.name })
+  console.log(route);
   useEffect(() => {
+    // const asd = await AsyncStorage.getItem('userName')
+    // alert(asd)
     navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
       navigation.getParent().setOptions({ tabBarStyle: { display: "flex" } });
