@@ -144,7 +144,6 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -195,7 +194,7 @@ export default function App() {
         password: password,
       })
       .then((res) => {
-        AsyncStorage.setItem('token', JSON.stringify(res.data.access))
+        AsyncStorage.setItem("token", JSON.stringify(res.data.access));
         axios
           .get("https://markazback2.onrender.com/auth/oneuser", {
             headers: { Authorization: "Bearer " + res.data.access },
@@ -231,17 +230,19 @@ export default function App() {
     console.log(a.data);
   };
   return (
-    <KeyboardAvoidingView 
-    behavior={Platform.OS == "android" ? undefined : "padding"}
-    style={{ flex: 1 }}
-    keyboardVerticalOffset={Platform.OS == "android" ? 0 : 100}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "android" ? "height" : "padding"}
+      style={{ flex: 1 }}
+      // enabled={1000}
+    >
       {state == null ? (
-        <ScrollView>
+        <ScrollView style={{ flexGrow: 1 }}>
           <View
             style={{
               minHeight: "100%",
               marginTop: 70,
               padding: 10,
+              flexGrow: 1
             }}
           >
             {height.height > 640 ? (
