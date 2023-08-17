@@ -9,6 +9,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Alert,
   ImageBackground,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -65,7 +66,11 @@ const ChatScreen = (props) => {
           return (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("User", { name: displayName });
+                // const email =email
+                navigation.navigate("User", {name:displayName, room: item,email: email });
+                const room =item
+    
+                socket.emit("join_room", { email, room });
                 // const helo = async() => {
                 // await AsyncStorage.setItem('userName', displayName)
                 // }
@@ -96,32 +101,84 @@ const ChatScreen = (props) => {
           );
         }
       })}
+           <TouchableOpacity onPress={()=>{
+            console.log(email);
+           }}><Text>d</Text></TouchableOpacity>
     </ScrollView>
   );
 };
 
 const UserScreen = () => {
   const [namePage, setNamePage] = useState("User");
+  const [currentMessage, setCurrentMessage] = useState("sms");
+  const [messageList, setMessageList] = useState([]);
   const height = Dimensions.get("window");
   const route = useRoute();
   const navigation = useNavigation();
   navigation.setOptions({ title: route.params.name });
   console.log(route);
   useEffect(() => {
-    // const asd = await AsyncStorage.getItem('userName')
-    // alert(asd)
     navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
       navigation.getParent().setOptions({ tabBarStyle: { display: "flex" } });
     };
   }, []);
 
-  // onPress={() => {
-  //         navigation
-  //           .getParent()
-  //           .setOptions({ tabBarStyle: { display: "flex" } });
-  //         navigation.goBack();
-  //       }}
+
+  useEffect(() => {
+ 
+      // const email=route.params.email
+      // socket.emit("get_rooms", { email });
+// console.log(1);
+       socket.on("receive_message", (data) => {
+      setMessageList((list) => [...list, data]);
+      let uniqueChars = [...new Set(data)];
+      setMessageList(uniqueChars);
+      socket.on("load_messages", (data) => {
+        let uniqueChars = [...new Set(data)];
+        setMessageList(uniqueChars);
+        // console.log(data,"load messages");
+      });
+      // socket.emit("join_room", { email, room });
+      // console.log(data," receive_message");
+      // console.log(messageList,"usestate");
+    });
+
+  }, [socket])
+
+  useEffect(() => {
+    const get = async () => {
+   await socket.on("load_messages", (data) => {
+    let uniqueChars = [...new Set(data)];
+      setMessageList(uniqueChars);
+      // console.log(data,"load messages");
+    });}
+    get();
+  }, [socket]);
+
+const handle=(value)=>{
+setCurrentMessage(value)
+}
+  const sendMessage = async () => {
+    const room=route.params.room
+    const email=route.params.email
+      const messageData = {
+        room: room,
+        author: email,
+        message: currentMessage,
+        time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      };
+
+       socket.emit("send_message", messageData);
+      setMessageList((list) => [...list, messageData]);
+      setCurrentMessage("");
+    
+    console.log(messageData);
+    console.log(currentMessage);
+  };
   const InputBox = () => {
     return (
       <View
@@ -132,10 +189,13 @@ const UserScreen = () => {
           bottom: 0,
           backgroundColor: "white",
         }}
+ 
       >
         <TextInput
           style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
           placeholder="send message"
+          value={currentMessage}
+          // onChangeText={handle}
         />
         <View
           style={{
@@ -147,7 +207,7 @@ const UserScreen = () => {
             alignItems: "center",
           }}
         >
-          <Text>Send</Text>
+          <Text onPress={()=>sendMessage()}  >Send</Text>
         </View>
       </View>
     );
@@ -162,7 +222,84 @@ const UserScreen = () => {
         resizeMode="cover"
       >
         <ScrollView style={{ flexGrow: 1, height: "100%" }}>
-          <View style={{ marginLeft: "50%", marginBottom: 10, marginTop: 20 }}>
+          {messageList.map((item)=>{
+            return          <View style={{  marginBottom: 10, marginTop: 20 }}>
+              {(() => {
+                if (item.author===route.params.email) {
+                  return<View
+                  style={{
+                    backgroundColor: "cornflowerblue",
+                    width: "50%",
+                    // height: 50,
+                    flex: 1,
+                    justifyContent: "center",
+                    padding: 10,
+                    borderRadius: 15,
+                    marginLeft: "50%",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: "white",
+                      height: "auto",
+                      paddingBottom: 10,
+                    }}
+                  >
+                     {item.message}
+                  </Text>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      color: "white",
+                      fontSize: 12,
+                      bottom: 0,
+                      right: 10,
+                    }}
+                  >
+                   {item.time}
+                  </Text>
+                </View>
+                }else{
+                  return<View
+                  style={{
+                    backgroundColor: "blue",
+                    width: "50%",
+                    // height: 50,
+                    flex: 1,
+                    justifyContent: "center",
+                    padding: 10,
+                    borderRadius: 15,
+                    // marginLeft: "50%",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: "white",
+                      height: "auto",
+                      paddingBottom: 10,
+                    }}
+                  >
+                     {item.message}
+                  </Text>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      color: "white",
+                      fontSize: 12,
+                      bottom: 0,
+                      right: 10,
+                    }}
+                  >
+                   {item.time}
+                  </Text>
+                </View>
+                }
+  })()}
+          </View>
+          })}
+          {/* <View style={{ marginLeft: "50%", marginBottom: 10, marginTop: 20 }}>
             <View
               style={{
                 backgroundColor: "cornflowerblue",
@@ -227,10 +364,37 @@ const UserScreen = () => {
                 2022-02-20
               </Text>
             </View>
-          </View>
+          </View> */}
         </ScrollView>
       </ImageBackground>
-      <InputBox />
+      <InputBox  />
+      {/* <View
+        style={{
+          flexDirection: "row",
+          height: 50,
+          position: "absolute",
+          bottom: 0,
+          backgroundColor: "white",
+        }}
+ 
+      >
+        <TextInput
+          style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
+          placeholder="send message"
+        />
+        <View
+          style={{
+            width: "20%",
+            height: 50,
+            borderWidth: 2,
+            backgroundColor: "dodgerblue",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text onPress={()=>sendMessage()} >Send</Text>
+        </View>
+      </View> */}
       {/*<View
         style={{
           flexDirection: "row",
