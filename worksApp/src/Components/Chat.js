@@ -167,6 +167,7 @@ const UserScreen = () => {
     setCurrentMessage(value);
   };
   const sendMessage = async () => {
+    if (currentMessage !== "") {
     const room = route.params.room;
     const email = route.params.email;
     const messageData = {
@@ -184,7 +185,7 @@ const UserScreen = () => {
     setCurrentMessage("");
 
     console.log(messageData);
-    console.log(currentMessage);
+    console.log(currentMessage);}
   };
   const InputBox = () => {
     return (
