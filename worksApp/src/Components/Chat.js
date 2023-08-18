@@ -12,7 +12,7 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -121,6 +121,7 @@ const UserScreen = () => {
   const [namePage, setNamePage] = useState("User");
   const [currentMessage, setCurrentMessage] = useState("sms");
   const [messageList, setMessageList] = useState([]);
+  const [styles, setStyles] = useState(true);
   const height = Dimensions.get("window");
   const route = useRoute();
   const navigation = useNavigation();
@@ -162,7 +163,7 @@ const UserScreen = () => {
       });
     };
     get();
-    scrollViewRef.current.scrollToEnd({animated: true})
+    scrollViewRef.current.scrollToEnd({ animated: true });
   }, [socket]);
 
   const handle = (value) => {
@@ -170,45 +171,45 @@ const UserScreen = () => {
   };
   const sendMessage = async () => {
     if (currentMessage !== "") {
-    const room = route.params.room;
-    const email = route.params.email;
-    const messageData = {
-      room: room,
-      author: email,
-      message: currentMessage,
-      time:
-        new Date(Date.now()).getHours() +
-        ":" +
-        new Date(Date.now()).getMinutes(),
-    };
+      const room = route.params.room;
+      const email = route.params.email;
+      const messageData = {
+        room: room,
+        author: email,
+        message: currentMessage,
+        time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      };
 
-    socket.emit("send_message", messageData);
-    setMessageList((list) => [...list, messageData]);
-    setCurrentMessage("");
+      socket.emit("send_message", messageData);
+      setMessageList((list) => [...list, messageData]);
+      setCurrentMessage("");
 
-    console.log(messageData);
-    console.log(currentMessage);}
+      console.log(messageData);
+      console.log(currentMessage);
+    }
   };
   // const scrollBottomEnd = async () => {
   //   scrollViewRef.current.scrollToEnd({animated: true})
   // };
   // useEffect(() => {
-    
-  
+
   //     scrollBottomEnd
-    
+
   // }, []);
   // useEffect(() => {
   //   scrollViewRef.current.scrollToEnd({animated: true});
   // }, [messageList.length]);
   // const InputBox = () => {
   //   return (
-  
+
   //   );
   // };
 
   return (
-    <View style={{ paddingBottom: 50 }}>
+    <View style={{ paddingBottom: styles == true ? 100 : 50, }}>
       <ImageBackground
         source={{
           uri: "https://i.pinimg.com/736x/d2/bf/d3/d2bfd3ea45910c01255ae022181148c4.jpg",
@@ -216,8 +217,13 @@ const UserScreen = () => {
         resizeMode="cover"
       >
         {/* <Button           onPress={() => scrollBottomEnd()} title="Scroll to bottom"/> */}
-        <ScrollView    ref={scrollViewRef}
-      onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })} style={{ flexGrow: 1, height: "100%" }}>
+        <ScrollView
+          ref={scrollViewRef}
+          onContentSizeChange={() =>
+            scrollViewRef.current.scrollToEnd({ animated: true })
+          }
+          style={{ flexGrow: 1, height: "100%" }}
+        >
           {messageList.map((item) => {
             return (
               <View style={{ marginBottom: 10, marginTop: 20 }}>
@@ -369,41 +375,62 @@ const UserScreen = () => {
           </View> */}
         </ScrollView>
       </ImageBackground>
-      
       <View
-      style={{
-        flexDirection: "row",
-        height: 50,
-        position: "absolute",
-        bottom: 0,
-        backgroundColor: "white",
-      }}
-    >
-      <TextInput
+        style={{
+          flexDirection: "row",
+          height: styles == true ? 90 : 50,
+          position: "absolute",
+          bottom: 0,
+          backgroundColor: "white",
+          flexDirection: 'column',
+          width: '100%',
+        }}
+      >
+        {styles == true ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              height: 40,
+              backgroundColor: "white",
+              alignItems: 'center',
+              paddingLeft: 10,
+              paddingRight: 10
+            }}
+          >
+            <Text>ertyu</Text>
+            <Feather name="x" onPress={() => setStyles(false)} size={24} color="black" />
+          </View>
+        ) : (
+          <Text style={{height: 1,}}>asd</Text>
+        )}
+        <View style={{flexDirection: 'row',}}>
+        <TextInput
         style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
         placeholder="send message"
         onChangeText={(text) => setCurrentMessage(text)}
-      />
-      <View
-        style={{
-          width: "20%",
-          height: 50,
-          borderWidth: 2,
-          backgroundColor: "dodgerblue",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Ionicons
+        />
+        <View
+          style={{
+            width: "20%",
+            height: 50,
+            borderWidth: 2,
+            backgroundColor: "dodgerblue",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          >
+          <Ionicons
           name="send"
           onPress={() => sendMessage()}
-          size={30}
-          color="white"
-        />
+            size={30}
+            color="white"
+          />
+          </View>
+        </View>
       </View>
-    </View>
-
-    </View>
+      </View>
   );
 };
 
