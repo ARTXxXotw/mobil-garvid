@@ -19,10 +19,9 @@ import axios from "axios";
 import { SimpleLineIcons, Entypo, FontAwesome5 } from "@expo/vector-icons";
 // import DropDownPicker from "react-native-dropdown-picker";
 import YoutubeIframe from "react-native-youtube-iframe";
-import SelectDropdown from "react-native-select-dropdown";
 
 const Stack = createStackNavigator();
-supportedURL = "https://markazback2.onrender.com/";
+supportedURL = 'https://markazback2.onrender.com/'
 
 const OpenURLButton = ({ url, children }) => {
   const handlePress = useCallback(async () => {
@@ -42,7 +41,7 @@ const OpenURLButton = ({ url, children }) => {
 };
 
 export default function Home() {
-  const navigation = useNavigation();
+const navigation = useNavigation()
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -51,13 +50,7 @@ export default function Home() {
         options={{
           headerRight: () => {
             return (
-              <FontAwesome5
-                name="cart-plus"
-                size={26}
-                marginRight={20}
-                color="black"
-                onPress={() => navigation.navigate("postPage")}
-              />
+              <FontAwesome5 name="cart-plus" size={26} marginRight={20} color="black" onPress={() => navigation.navigate('postPage')} />
             );
           },
         }}
@@ -71,42 +64,12 @@ export default function Home() {
 }
 
 const postPage = () => {
-  const [ courseType, setCourseType ] = useState("")
-  const keyOlish = async () => {
-    const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser);
-    axios.get("https://markazback2.onrender.com/api/cours_types", {
-      headers: { Authorization: "Bearer " + parseToken },
-    }).then(res => {
-      res.data.map(item => {
-        setCourseType(item.name)
-        console.log(item, 'res data');
-      })
-    }).catch(err => {
-      console.log(err);
-    })
-  };
-  useEffect(() => {
-    keyOlish()
-  }, [])
-  const countries = ["Egypt", "Canada", "Australia", "Ireland"];
-  return (
+  return(
     <View>
-      <SelectDropdown
-        data={courseType}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item;
-        }}
-      />
+    <Text>ad</Text>
     </View>
-  );
-};
+  )
+}
 
 const ThemePage = () => {
   const [categry, setCtgry] = useState();
@@ -155,7 +118,7 @@ const BonusPage = (props) => {
     const keyOlish = async () => {
       const courseId2 = await AsyncStorage.getItem("courseId");
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser);
+    const parseToken = JSON.parse(tokenUser)
 
       axios
         .get(
@@ -201,17 +164,16 @@ const BonusPage = (props) => {
   );
 };
 
-const ViewPage = () => {
+const ViewPage = (props) => {
   const [course, setCourse] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [isLoading, setIsLoading] = useState(null);
-  const navigation = useNavigation();
 
   const onRefresh = React.useCallback(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser);
-
+    const parseToken = JSON.parse(tokenUser)
+      
       // axios
       //   .get("https://markazback2.onrender.com/auth/oneuser", {
       //     headers: { Authorization: "Bearer " + tokenUser },
@@ -318,7 +280,7 @@ const ViewPage = () => {
   useEffect(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser);
+    const parseToken = JSON.parse(tokenUser)
 
       // axios
       //   .get("https://markazback2.onrender.com/auth/oneuser", {
@@ -454,11 +416,23 @@ const ViewPage = () => {
                 style={{ width: "100%", height: 300 }}
               />
               <Text>No Course</Text>
-              <View style={{ position: "relative" }}>
-                <Button
-                  title="Add new course"
-                  onPress={() => navigation.navigate("postPage")}
-                />
+              <View style={{ position: 'relative' }}>
+                <Button title='Course sotib olish' />
+                <View
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  zIndex: 3,
+                }}
+              >
+                <OpenURLButton url={supportedURL}>
+                  Open Supported URL
+                </OpenURLButton>
+              </View>
               </View>
             </View>
           ) : (
@@ -467,7 +441,7 @@ const ViewPage = () => {
                 return (
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate("Course");
+                      props.navigation.navigate("Course");
                       getted(item.id);
                     }}
                   >
@@ -591,7 +565,7 @@ const ViewPage2 = (props) => {
     const keyOlish = async () => {
       const courseId2 = await AsyncStorage.getItem("courseId");
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser);
+    const parseToken = JSON.parse(tokenUser)
 
       axios
         .get(
