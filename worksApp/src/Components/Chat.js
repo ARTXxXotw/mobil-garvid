@@ -139,8 +139,8 @@ const UserScreen = () => {
     // console.log(1);
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
-      let uniqueChars = [...new Set(data)];
-      setMessageList(uniqueChars);
+      // let uniqueChars = [...new Set(data)];
+      // setMessageList(uniqueChars);
       socket.on("load_messages", (data) => {
         let uniqueChars = [...new Set(data)];
         setMessageList(uniqueChars);
