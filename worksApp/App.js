@@ -242,7 +242,6 @@ export default function App() {
               minHeight: "100%",
               marginTop: 70,
               padding: 10,
-              flexGrow: 1
             }}
           >
             {height.height > 640 ? (

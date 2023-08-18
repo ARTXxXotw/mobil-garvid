@@ -20,6 +20,7 @@ import io from "socket.io-client";
 import { useNavigation, useRoute } from "@react-navigation/native";
 const socket = io.connect("https://markazback2.onrender.com");
 const Stack = createStackNavigator();
+import { Feather, Ionicons  } from '@expo/vector-icons'; 
 
 const ChatScreen = (props) => {
   const [email, setEmail] = useState("");
@@ -100,8 +101,9 @@ const ChatScreen = (props) => {
   );
 };
 
-const UserScreen = () => {
+const UserScreen = () => { 
   const [namePage, setNamePage] = useState("User");
+  const [ message, setMessage ] = useState("")
   const height = Dimensions.get("window");
   const route = useRoute();
   const navigation = useNavigation();
@@ -136,6 +138,7 @@ const UserScreen = () => {
         <TextInput
           style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
           placeholder="send message"
+          onChangeText={(text) => setMessage(text)}
         />
         <View
           style={{
@@ -147,7 +150,7 @@ const UserScreen = () => {
             alignItems: "center",
           }}
         >
-          <Text>Send</Text>
+        <Ionicons name="send" size={30} color="white" />
         </View>
       </View>
     );
@@ -179,7 +182,7 @@ const UserScreen = () => {
                   fontSize: 16,
                   color: "white",
                   height: "auto",
-                  paddingBottom: 10,
+                  paddingBottom: 15,
                 }}
               >
                 halilov abdurahim halilov abdurahim
@@ -189,7 +192,7 @@ const UserScreen = () => {
                   position: "absolute",
                   color: "white",
                   fontSize: 12,
-                  bottom: 0,
+                  bottom: 5,
                   right: 10,
                 }}
               >
@@ -220,7 +223,7 @@ const UserScreen = () => {
                   position: "absolute",
                   color: "white",
                   fontSize: 12,
-                  bottom: 0,
+                  bottom: 5,
                   right: 10,
                 }}
               >
@@ -261,7 +264,11 @@ const Chat = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Chat" component={ChatScreen} />
-      <Stack.Screen name="User" component={UserScreen} />
+      <Stack.Screen name="User" options={{
+        headerStyle: {
+            backgroundColor: 'silver'
+        },
+      }} component={UserScreen} />
     </Stack.Navigator>
   );
 };

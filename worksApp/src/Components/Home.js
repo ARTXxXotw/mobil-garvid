@@ -356,6 +356,7 @@ const ViewPage = (props) => {
                 headers: { Authorization: "Bearer " + tokenUser },
               })
               .then((res2) => {
+                console.log(res2.data);
                 // if (res2.data) {
                 //   console.log(res2.data);
                 // } else {
