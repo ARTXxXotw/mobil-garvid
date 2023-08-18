@@ -385,7 +385,7 @@ borderWidth: 1,
           <Navigator />
         </NavigationContainer>
       )}*/}
-      <StatusBar style="default" />
+      <StatusBar style='dark' />
     </KeyboardAvoidingView>
   );
 }
