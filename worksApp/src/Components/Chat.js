@@ -189,6 +189,18 @@ const UserScreen = () => {
     console.log(messageData);
     console.log(currentMessage);}
   };
+  // const scrollBottomEnd = async () => {
+  //   scrollViewRef.current.scrollToEnd({animated: true})
+  // };
+  // useEffect(() => {
+    
+  
+  //     scrollBottomEnd
+    
+  // }, []);
+  // useEffect(() => {
+  //   scrollViewRef.current.scrollToEnd({animated: true});
+  // }, [messageList.length]);
   // const InputBox = () => {
   //   return (
   
@@ -203,8 +215,9 @@ const UserScreen = () => {
         }}
         resizeMode="cover"
       >
-        {/* <Button title="Scroll to bottom" onPress={() => scrollViewRef.current.scrollToEnd({animated: true})} /> */}
-        <ScrollView ref={scrollViewRef} style={{ flexGrow: 1, height: "100%" }}>
+        {/* <Button           onPress={() => scrollBottomEnd()} title="Scroll to bottom"/> */}
+        <ScrollView    ref={scrollViewRef}
+      onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })} style={{ flexGrow: 1, height: "100%" }}>
           {messageList.map((item) => {
             return (
               <View style={{ marginBottom: 10, marginTop: 20 }}>
