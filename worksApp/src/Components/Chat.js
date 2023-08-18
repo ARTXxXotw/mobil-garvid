@@ -12,7 +12,7 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -124,6 +124,7 @@ const UserScreen = () => {
   const height = Dimensions.get("window");
   const route = useRoute();
   const navigation = useNavigation();
+  const scrollViewRef = useRef();
   navigation.setOptions({ title: route.params.name });
   console.log(route);
   useEffect(() => {
@@ -161,6 +162,7 @@ const UserScreen = () => {
       });
     };
     get();
+    scrollViewRef.current.scrollToEnd({animated: true})
   }, [socket]);
 
   const handle = (value) => {
@@ -201,7 +203,8 @@ const UserScreen = () => {
         }}
         resizeMode="cover"
       >
-        <ScrollView style={{ flexGrow: 1, height: "100%" }}>
+        {/* <Button title="Scroll to bottom" onPress={() => scrollViewRef.current.scrollToEnd({animated: true})} /> */}
+        <ScrollView ref={scrollViewRef} style={{ flexGrow: 1, height: "100%" }}>
           {messageList.map((item) => {
             return (
               <View style={{ marginBottom: 10, marginTop: 20 }}>
@@ -353,6 +356,7 @@ const UserScreen = () => {
           </View> */}
         </ScrollView>
       </ImageBackground>
+      
       <View
       style={{
         flexDirection: "row",
@@ -385,55 +389,7 @@ const UserScreen = () => {
         />
       </View>
     </View>
-      {/* <View
-        style={{
-          flexDirection: "row",
-          height: 50,
-          position: "absolute",
-          bottom: 0,
-          backgroundColor: "white",
-        }}
- 
-      >
-        <TextInput
-          style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
-          placeholder="send message"
-        />
-        <View
-          style={{
-            width: "20%",
-            height: 50,
-            borderWidth: 2,
-            backgroundColor: "dodgerblue",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text onPress={()=>sendMessage()} >Send</Text>
-        </View>
-      </View> */}
-      {/*<View
-        style={{
-          flexDirection: "row",
-          backgroundColor: "#fff",
-          justifyContent: "space-between",
-          padding: 5,
-          position: "absolute",
-          top: height.height / 1.3,
-          height: 62,
-        }}
-      >
-        <TextInput
-          placeholder="send to "
-          style={{
-            width: "85%",
-            height: 45,
-            borderWidth: 1,
-            paddingLeft: 10,
-          }}
-        />
-        <Button title="send" />
-        </View>*/}
+
     </View>
   );
 };
