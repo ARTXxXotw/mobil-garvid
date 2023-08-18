@@ -186,42 +186,11 @@ const UserScreen = () => {
     console.log(messageData);
     console.log(currentMessage);
   };
-  const InputBox = () => {
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          height: 50,
-          position: "absolute",
-          bottom: 0,
-          backgroundColor: "white",
-        }}
-      >
-        <TextInput
-          style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
-          placeholder="send message"
-          onChangeText={(text) => setCurrentMessage(text)}
-        />
-        <View
-          style={{
-            width: "20%",
-            height: 50,
-            borderWidth: 2,
-            backgroundColor: "dodgerblue",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="send"
-            onPress={() => sendMessage()}
-            size={30}
-            color="white"
-          />
-        </View>
-      </View>
-    );
-  };
+  // const InputBox = () => {
+  //   return (
+  
+  //   );
+  // };
 
   return (
     <View style={{ paddingBottom: 50 }}>
@@ -383,7 +352,38 @@ const UserScreen = () => {
           </View> */}
         </ScrollView>
       </ImageBackground>
-      <InputBox />
+      <View
+      style={{
+        flexDirection: "row",
+        height: 50,
+        position: "absolute",
+        bottom: 0,
+        backgroundColor: "white",
+      }}
+    >
+      <TextInput
+        style={{ borderWidth: 2, width: "80%", height: 50, paddingLeft: 10 }}
+        placeholder="send message"
+        onChangeText={(text) => setCurrentMessage(text)}
+      />
+      <View
+        style={{
+          width: "20%",
+          height: 50,
+          borderWidth: 2,
+          backgroundColor: "dodgerblue",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Ionicons
+          name="send"
+          onPress={() => sendMessage()}
+          size={30}
+          color="white"
+        />
+      </View>
+    </View>
       {/* <View
         style={{
           flexDirection: "row",
