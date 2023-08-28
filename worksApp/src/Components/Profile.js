@@ -8,6 +8,11 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,15 +20,14 @@ import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import IconsForMe from "react-native-vector-icons/MaterialIcons";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CustomDrawer from "./CustomDrawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import HelpScreen from './HelpSreen'
-import { Entypo, Feather ,MaterialCommunityIcons } from '@expo/vector-icons';
+import HelpScreen from "./HelpSreen";
+import { Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import ApplicationScreen from "./ApplicationScreen";
-
 
 const Tab = createMaterialTopTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -224,15 +228,14 @@ const ProfilePage = (props) => {
   const [user, setUser] = useState([]);
   const [loader, setLoader] = useState();
   const [refreshing, setRefreshing] = React.useState(false);
-
+  const navigation = useNavigation();
   const onRefresh = React.useCallback(() => {
     setLoader(null);
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -240,18 +243,17 @@ const ProfilePage = (props) => {
         });
     };
     setTimeout(() => {
-      keyOlish()
+      keyOlish();
       setLoader(1);
     }, 2000);
   }, []);
   useEffect(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
 
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -272,13 +274,15 @@ const ProfilePage = (props) => {
       }
     >
       {loader == null ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Image
-        source={{
-          uri: "https://www.kingsubash.com/assets/img/sample-loader.gif",
-        }}
-        style={{ width: "100%", height: 520 }}
-        />
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Image
+            source={{
+              uri: "https://www.kingsubash.com/assets/img/sample-loader.gif",
+            }}
+            style={{ width: "100%", height: 520 }}
+          />
         </View>
       ) : (
         <View>
@@ -291,7 +295,7 @@ const ProfilePage = (props) => {
                     <Image
                       style={styles.tinyLogo}
                       source={{
-                        uri: `${item.image}`,
+                        uri: `https://markazback2.onrender.com/${item.image}`,
                       }}
                     />
                   ) : (
@@ -327,7 +331,7 @@ const ProfilePage = (props) => {
                     No Description!
                   </Text>
                 )}
-              
+
                 <View></View>
               </View>
             );
@@ -340,7 +344,6 @@ const ProfilePage = (props) => {
 };
 
 const EditProfile = (props) => {
-  
   const [user, setUser] = useState([]);
   const [date, setDate] = useState(new Date()); //this full time
   const [mode, setMode] = useState("date");
@@ -356,6 +359,7 @@ const EditProfile = (props) => {
   const [userEmail, setUserEmail] = useState("");
   const [userMap, setUserMap] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [state, setState] = React.useState(true);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -372,11 +376,10 @@ const EditProfile = (props) => {
     })();
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
 
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -389,6 +392,9 @@ const EditProfile = (props) => {
             setDescription(item.description);
             setUserEmail(item.email);
           });
+        })
+        .finally(() => {
+          setState(false);
         });
     };
     keyOlish();
@@ -410,15 +416,18 @@ const EditProfile = (props) => {
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 1,
-    });
-    console.log(result.uri, "this is result");
-    if (!result.canceled) {
-      setImage(result.uri);
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      console.log(res.uri, res.type, res.name, res.size);
+      this.uploadAPICall(res);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log("error -----", err);
+      } else {
+        throw err;
+      }
     }
   };
 
@@ -444,23 +453,32 @@ const EditProfile = (props) => {
   };
 
   const postData = async () => {
-    var data2 = {
-      last_name: last_name,
-      username: username,
-      phone_number: phone_number,
-      address: adress,
-      description: description,
-      image: image,
-      email: "halilovabdurahim13@gmail.com",
-    };
+    var data2 = new FormData();
+    data2.append("last_name", 'last_name');
+    data2.append("username", 'username');
+    data2.append("phone_number", 'phone_number');
+    data2.append("address", 'adress');
+    data2.append("description", 'description');
+    data2.append("birthday", "2023-02-20");
+    data2.append("image", "234e345342313.png");
+    data2.append("email", "halilovabdurahim13@gmail.com");
+    data2.append("first_name", "1232");
+    // var data2 = {
+    //   last_name: last_name,
+    //   username: username,
+    //   phone_number: phone_number,
+    //   address: adress,
+    //   description: description,
+    //   image: image,
+    //   email: "halilovabdurahim13@gmail.com",
+    // };
     const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
 
     axios
       .put(
-        `https://markazback2.onrender.com/auth/oneuser/${userMap.id}/`,
-        data2,
-        { headers: { Authorization: "Bearer " + parseToken } }
+        `https://markazback2.onrender.com/auth/oneuser/${userMap.id}`,
+        { data2 },
+        { headers: { Authorization: "Bearer " + tokenUser } }
       )
       .then((res) => {
         Alert.alert("Succes", "You edited profile!", [
@@ -470,8 +488,8 @@ const EditProfile = (props) => {
       .catch((err) => {
         alert(err);
         console.log(err);
+        console.log(data2);
       });
-    console.log(tokenUser);
   };
 
   return (
@@ -480,159 +498,164 @@ const EditProfile = (props) => {
       onScroll={(e) => console.log(e.nativeEvent.contentOffset.y)}
       scrollEventThrottle={16}
     >
-      <View style={{ paddingBottom: 30 }}>
-        {user.map((item) => {
-          return (
-            <View>
+      {state == true ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="big" color="#0000ff" />
+        </View>
+      ) : (
+        <View style={{ paddingBottom: 30 }}>
+          {user.map((item) => {
+            return (
               <View>
-                {image == null ? (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      padding: 5,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Image
-                      source={{ uri: `${userMap.image}` }}
+                <View>
+                  {image == null ? (
+                    <View
                       style={{
-                        width: 150,
-                        height: 150,
-                        borderRadius: 100,
-                        borderWidth: 2,
-                        borderColor: "yellow",
+                        flexDirection: "row",
+                        padding: 5,
+                        justifyContent: "center",
                       }}
-                    />
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      padding: 5,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Image
-                      source={{ uri: image }}
+                    >
+                      <Pressable onPress={() => pickImage()}>
+                        <Image
+                          source={{
+                            uri: `https://markazback2.onrender.com/${userMap.image}`,
+                          }}
+                          style={{
+                            width: 150,
+                            height: 150,
+                            borderRadius: 100,
+                            borderWidth: 2,
+                            borderColor: "yellow",
+                          }}
+                        />
+                      </Pressable>
+                    </View>
+                  ) : (
+                    <View
                       style={{
-                        width: 150,
-                        height: 150,
-                        borderRadius: 100,
-                        borderWidth: 2,
-                        borderColor: "red",
+                        flexDirection: "row",
+                        padding: 5,
+                        justifyContent: "center",
                       }}
-                    />
-                  </View>
-                )}
-                <IconsForMe
-                  name="photo-camera"
-                  onPress={() => pickImage()}
+                    >
+                      <Pressable onPress={() => pickImage()}>
+                        <Image
+                          source={{ uri: image }}
+                          style={{
+                            width: 150,
+                            height: 150,
+                            borderRadius: 100,
+                            borderWidth: 2,
+                            borderColor: "red",
+                          }}
+                        />
+                      </Pressable>
+                    </View>
+                  )}
+                  <IconsForMe
+                    name="photo-camera"
+                    onPress={() => pickImage()}
+                    style={{
+                      fontSize: 35,
+                      backgroundColor: "dodgerblue",
+                      padding: 10,
+                      borderRadius: 30,
+                      width: 55,
+                      height: 55,
+                      color: "white",
+                      top: -58,
+                      left: 202,
+                    }}
+                  />
+                </View>
+                <View style={{ marginBottom: 10 }}>
+                  <Text>Selected Birthday: {text}</Text>
+                  <Button
+                    title="Select Data"
+                    onPress={() => showMode("date")}
+                  />
+                </View>
+                <Text>Name</Text>
+                <TextInput
                   style={{
-                    fontSize: 35,
-                    backgroundColor: "dodgerblue",
-                    padding: 10,
-                    borderRadius: 30,
-                    width: 55,
-                    height: 55,
-                    color: "white",
-                    top: -58,
-                    left: 202,
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    marginBottom: 10,
+                    borderRadius: 5,
+                    paddingLeft: 5,
                   }}
+                  placeholder={item.last_name}
+                  onChangeText={handleChangeData2}
                 />
+                <Text>Surname</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    marginBottom: 10,
+                    borderRadius: 5,
+                    paddingLeft: 5,
+                  }}
+                  placeholder={item.username}
+                  onChangeText={handleChangeData3}
+                />
+                <Text>Phone Number</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    marginBottom: 10,
+                    borderRadius: 5,
+                    paddingLeft: 5,
+                  }}
+                  placeholder={item.phone_number}
+                  keyboardType="numeric"
+                  onChangeText={handleChangeData4}
+                />
+                <Text>Address</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    marginBottom: 10,
+                    borderRadius: 5,
+                    paddingLeft: 5,
+                  }}
+                  placeholder={item.address}
+                  keyboardType="email-address"
+                  onChangeText={handleChangeData5}
+                />
+                <Text>Description</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    marginBottom: 10,
+                    borderRadius: 5,
+                    paddingLeft: 5,
+                  }}
+                  placeholder={item.description}
+                  onChangeText={handleChangeData6}
+                />
+                <Button title="Puted" onPress={postData} type="submit" />
               </View>
-              <Text>Last Name</Text>
-              <TextInput
-                style={{
-                  width: "100%",
-                  height: 40,
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  borderRadius: 5,
-                  paddingLeft: 5,
-                }}
-                placeholder={item.last_name}
-                onChangeText={handleChangeData2}
-              />
-              <Text>Username</Text>
-              <TextInput
-                style={{
-                  width: "100%",
-                  height: 40,
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  borderRadius: 5,
-                  paddingLeft: 5,
-                }}
-                placeholder={item.username}
-                onChangeText={handleChangeData3}
-              />
-              <Text>Phone Number</Text>
-              <TextInput
-                style={{
-                  width: "100%",
-                  height: 40,
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  borderRadius: 5,
-                  paddingLeft: 5,
-                }}
-                placeholder={item.phone_number}
-                keyboardType="numeric"
-                onChangeText={handleChangeData4}
-              />
-              <Text>Address</Text>
-              <TextInput
-                style={{
-                  width: "100%",
-                  height: 40,
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  borderRadius: 5,
-                  paddingLeft: 5,
-                }}
-                placeholder={item.address}
-                keyboardType="email-address"
-                onChangeText={handleChangeData5}
-              />
-              <Text>Description</Text>
-              <TextInput
-                style={{
-                  width: "100%",
-                  height: 40,
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  borderRadius: 5,
-                  paddingLeft: 5,
-                }}
-                placeholder={item.description}
-                onChangeText={handleChangeData6}
-              />
-             <Button title="Puted" onPress={postData} type="submit" />
-            </View>
-          );
-        })}
-      </View>
+            );
+          })}
+        </View>
+      )}
     </ScrollView>
   );
 };
 
 export default function Profile() {
-  const [setts, setSetts] = useState();
-  const page = () => {
-    return (
-      <View
-        style={{
-          fontSize: 28,
-          backgroundColor: "red",
-          position: "absolute",
-          top: 100,
-          left: 50,
-        }}
-      >
-        <Text>hallasd</Text>
-      </View>
-    );
-  };
   return (
     <NavigationContainer independent={true}>
       <Drawer.Navigator
@@ -643,6 +666,8 @@ export default function Profile() {
           name="Profile"
           component={ProfilePage}
           options={{
+            headerShown: false,
+            headerTitleStyle: { display: "none" },
             drawerIcon: ({ color }) => (
               <FontAwesome name="user-circle-o" size={22} color={color} />
             ),
@@ -652,6 +677,8 @@ export default function Profile() {
           name="EditProfile"
           component={EditProfile}
           options={{
+            headerShown: false,
+            headerTitleStyle: { display: "none" },
             drawerIcon: ({ color }) => (
               <Ionicons name="settings-sharp" size={22} color={color} />
             ),
@@ -661,6 +688,8 @@ export default function Profile() {
           name="Sertificates"
           component={SertificateScreen}
           options={{
+            headerShown: false,
+            headerTitleStyle: { display: "none" },
             drawerIcon: ({ color }) => (
               <IconsForMe name="star-border" size={22} color={color} />
             ),
@@ -670,24 +699,209 @@ export default function Profile() {
           name="Help"
           component={HelpScreen}
           options={{
-            drawerIcon: ({ focused }) => (
-              focused ? <Entypo name="help-with-circle" size={24} color="black" /> : <Feather name="help-circle" size={24} color="black" />
-            ),
+            headerShown: false,
+            headerTitleStyle: { display: "none" },
+            drawerIcon: ({ focused }) =>
+              focused ? (
+                <Entypo name="help-with-circle" size={24} color="black" />
+              ) : (
+                <Feather name="help-circle" size={24} color="black" />
+              ),
           }}
         />
         <Drawer.Screen
-        name="ApplicationScreen"
-        component={ApplicationScreen}
-        options={{
-          drawerIcon: ({ focused }) => (
-            focused ? <MaterialCommunityIcons name="application-edit" size={24} color="black" /> : <MaterialCommunityIcons name="application-edit-outline" size={24} color="black" />
-          ),
-        }}
-      />
+          name="ApplicationScreen"
+          component={ApplicationScreen}
+          options={{
+            headerShown: false,
+            headerTitleStyle: { display: "none" },
+            drawerIcon: ({ focused }) =>
+              focused ? (
+                <MaterialCommunityIcons
+                  name="application-edit"
+                  size={24}
+                  color="black"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="application-edit-outline"
+                  size={24}
+                  color="black"
+                />
+              ),
+          }}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );
 }
+
+// const PageLoginn = (props) => {
+//   const [state, setState] = useState(null);
+//   const [username, setUsername] = useState("alibeliy777777@gmail.com");
+//   const [password, setPassword] = useState("bel1y4442");
+//   const height = Dimensions.get("window");
+//   // const getLocal = async () => {
+//   //   // await AsyncStorage.clear()
+//   //   var value = await AsyncStorage.getItem("pageNumber");
+//   //   // alert(value);
+//   //   setState(value ? value : null);
+//   // };
+//   // useEffect(() => {
+//   //   getLocal();
+//   //   // console.log(height.height);
+//   // });
+//   const handleChangeUsername = (text) => {
+//     setUsername(text);
+//   };
+//   const handleChangePassword = (text) => {
+//     setPassword(text);
+//   };
+//   // const navigation = useNavigation();
+
+//   const onSave = async () => {
+//     var data = new FormData();
+//     data.append("email", username);
+//     data.append("password", password);
+//     var a = await axios
+//       .post("https://markazback2.onrender.com/auth/login", {
+//         email: username,
+//         password: password,
+//       })
+//       .then((res) => {
+//         AsyncStorage.setItem("token", JSON.stringify(res.data.access));
+//         axios
+//           .get("https://markazback2.onrender.com/auth/oneuser", {
+//             headers: { Authorization: "Bearer " + res.data.access },
+//           })
+//           .then((ress) => {
+//             ress.data.map((item) => {
+//               if (item.position == 1) {
+//                 AsyncStorage.setItem(
+//                   "pageNumber",
+//                   JSON.stringify(item.position)
+//                 );
+//                 props.navigation.replace("IndexNavigation");
+//               } else if (item.position == 2) {
+//                 AsyncStorage.setItem(
+//                   "pageNumber",
+//                   JSON.stringify(item.position)
+//                 );
+//                 props.navigation.replace("Navigation");
+//               } else {
+//                 AsyncStorage.setItem("pageNumber", null);
+//                 alert('bunday shaxs yo"q');
+//                 setState(null);
+//               }
+//             });
+//           });
+//       });
+//     // a.data.access
+//     //   ? (alert("Succes"),
+//     //     setState(2),
+//     //     await AsyncStorage.setItem("token", a.data.access))
+//     //   : alert("Bunday shaxs yoq");
+
+//     console.log(a.data);
+//   };
+//   return (
+//     <KeyboardAvoidingView
+//       behavior={Platform.OS == "android" ? "height" : "padding"}
+//       style={{ flex: 1 }}
+//       // enabled={1000}
+//     >
+//       {state == null ? (
+//         <ScrollView style={{ flexGrow: 1 }}>
+//           <View
+//             style={{
+//               minHeight: "100%",
+//               marginTop: 70,
+//               padding: 10,
+//             }}
+//           >
+//             {height.height > 640 ? (
+//               <Image
+//                 style={{ width: "100%", height: 200 }}
+//                 source={require("../../img/HowardLogo.png")}
+//               />
+//             ) : (
+//               <Image
+//                 style={{ width: "100%", height: 170 }}
+//                 source={require("../../img/HowardLogo.png")}
+//               />
+//             )}
+//             <View style={{ marginTop: 50 }}>
+//               <View style={{ marginTop: 10 }}>
+//                 <Text style={{ fontSize: 17, marginLeft: 2 }}>Login</Text>
+//                 <TextInput
+//                   style={{
+//                     width: "100%",
+//                     height: 40,
+//                     borderWidth: 1,
+//                     borderColor: "dodgerblue",
+//                     borderRadius: 5,
+//                     paddingLeft: 10,
+//                     fontSize: 17,
+//                   }}
+//                   onChangeText={handleChangeUsername}
+//                 />
+//               </View>
+//               <View style={{ marginTop: 10, marginBottom: 20 }}>
+//                 <Text style={{ fontSize: 17, marginLeft: 2 }}>Password</Text>
+//                 <TextInput
+//                   style={{
+//                     width: "100%",
+//                     height: 40,
+//                     borderWidth: 1,
+//                     borderColor: "dodgerblue",
+//                     borderRadius: 5,
+//                     paddingLeft: 10,
+//                     fontSize: 17,
+//                   }}
+//                   onChangeText={handleChangePassword}
+//                   secureTextEntry={true}
+//                 />
+//               </View>
+//             </View>
+//             <Text>{username + " " + password}</Text>
+//             <Button title="Вход" onPress={onSave} />
+//           </View>
+//         </ScrollView>
+//       ) : (
+//         <View
+//           style={{
+//             width: "100%",
+//             height: 700,
+//             flex: 1,
+//             justifyContent: "center",
+//             marginTop: 30,
+//           }}
+//         >
+//           {state == 1 ? (
+//             <View
+//               style={{
+//                 flex: 1,
+//               }}
+//             >
+//               <IndexNavigation />
+//             </View>
+//           ) : (
+//             <NavigationContainer>
+//               <NavigationsBar />
+//             </NavigationContainer>
+//           )}
+//         </View>
+//       )}
+//     </KeyboardAvoidingView>
+//   );
+// };
+// const Pageee = () => {
+//   return (
+//     <Tab.Navigator>
+//       <Tab.Screen name="Login" options={{tabBarLabelStyle: { display: "none" }}} component={PageLoginn} />
+//     </Tab.Navigator>
+//   );
+// };
 
 const styles = StyleSheet.create({
   flex: {

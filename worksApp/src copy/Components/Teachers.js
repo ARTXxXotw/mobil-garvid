@@ -25,11 +25,10 @@ const TeachersPage = (props, key) => {
   const [teachers, setTeachers] = useState([]);
   const [teachers2, setTeachers2] = useState([]);
   const pages = async () => {
-    var tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
+    var tokenUser = await AsyncStorage.getItem("token"); 
     axios
       .get("https://markazback2.onrender.com/auth/teachers", {
-        headers: { Authorization: "Bearer " + parseToken },
+        headers: { Authorization: "Bearer " + tokenUser },
       })
       .then((res) => {
         setTeachers(res.data);
@@ -202,12 +201,11 @@ const OneTeacher = (props) => {
   const onRefresh = React.useCallback(() => {
     const getted = async () => {
       var tokenTeach = await AsyncStorage.getItem("OneTeacher");
-      const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
+      const tokenUser = await AsyncStorage.getItem("token"); 
 
       axios
         .get(`https://markazback2.onrender.com/auth/teacher/${tokenTeach}/`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setTeacher(res.data);
@@ -244,7 +242,7 @@ const OneTeacher = (props) => {
         });
       axios
         .get(`https://markazback2.onrender.com/auth/oneuser`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           res.data.map((item) => {
@@ -254,19 +252,19 @@ const OneTeacher = (props) => {
 
       axios
         .get("https://markazback2.onrender.com/api/follow", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           axios
             .get(`https://markazback2.onrender.com/auth/oneuser`, {
-              headers: { Authorization: "Bearer " + parseToken },
+              headers: { Authorization: "Bearer " + tokenUser },
             })
             .then((res2) => {
               axios
                 .get(
                   `https://markazback2.onrender.com/auth/teacher/${tokenTeach}/`,
                   {
-                    headers: { Authorization: "Bearer " + parseToken },
+                    headers: { Authorization: "Bearer " + tokenUser },
                   }
                 )
                 .then((res3) => {
@@ -299,12 +297,11 @@ const OneTeacher = (props) => {
     // console.log('helo');
     const getted = async () => {
       var tokenTeach = await AsyncStorage.getItem("OneTeacher");
-      const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
+      const tokenUser = await AsyncStorage.getItem("token"); 
 
       axios
         .get(`https://markazback2.onrender.com/auth/teacher/${tokenTeach}/`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setTeacher(res.data);
@@ -341,7 +338,7 @@ const OneTeacher = (props) => {
         });
       axios
         .get(`https://markazback2.onrender.com/auth/oneuser`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           res.data.map((item) => {
@@ -351,19 +348,19 @@ const OneTeacher = (props) => {
 
       axios
         .get("https://markazback2.onrender.com/api/follow", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           axios
             .get(`https://markazback2.onrender.com/auth/oneuser`, {
-              headers: { Authorization: "Bearer " + parseToken },
+              headers: { Authorization: "Bearer " + tokenUser },
             })
             .then((res2) => {
               axios
                 .get(
                   `https://markazback2.onrender.com/auth/teacher/${tokenTeach}/`,
                   {
-                    headers: { Authorization: "Bearer " + parseToken },
+                    headers: { Authorization: "Bearer " + tokenUser },
                   }
                 )
                 .then((res3) => {
@@ -396,8 +393,7 @@ const OneTeacher = (props) => {
   const followingUser = async () => {
     // console.log(mapTeacher.id, 'hello');
     const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
     var data = {
       topuser: mapTeacher.id,
       minuser: fullUser.id,
@@ -405,7 +401,7 @@ const OneTeacher = (props) => {
     // console.log(data);
     axios
       .post("https://markazback2.onrender.com/api/follow", data, {
-        headers: { Authorization: "Bearer " + parseToken },
+        headers: { Authorization: "Bearer " + tokenUser },
       })
       .then((res) => {
         alert("succes");
@@ -420,11 +416,10 @@ const OneTeacher = (props) => {
 
   const unFollowing = async () => {
     const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
     axios
       .delete(`https://markazback2.onrender.com/api/follow/${unfollowId}`, {
-        headers: { Authorization: "Bearer " + parseToken },
+        headers: { Authorization: "Bearer " + tokenUser },
       })
       .then((res) => {
         //  alert('succes')

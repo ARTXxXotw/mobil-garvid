@@ -16,11 +16,10 @@ const HelpPage = ({navigation, key}) => {
     // alert('uyf')
     const Help1 = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
 
       axios
         .get("https://markazback2.onrender.com/api/help/", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setHelp(res.data);
@@ -202,12 +201,11 @@ const HelpScreen = (props) => {
   useEffect(() => {
     const hj = async () => {
       var helpid = await AsyncStorage.getItem("helpId");
-      var tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
+      var tokenUser = await AsyncStorage.getItem("token"); 
 
       axios
         .get(`https://markazback2.onrender.com/api/help/${helpid}`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setHelp(res.data);

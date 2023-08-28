@@ -12,7 +12,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
-
+import com.reactnativerestart.RestartPackage;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 
@@ -23,6 +23,13 @@ public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost =
     new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
       @Override
+       protected List<ReactPackage> getPackages() {
+	        ...
+	        return Arrays.<ReactPackage>asList(
+	                new MainReactPackage(),
+	                new RestartPackage() // Add this line
+	        );
+	    }
       public boolean getUseDeveloperSupport() {
         return BuildConfig.DEBUG;
       }

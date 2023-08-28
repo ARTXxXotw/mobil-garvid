@@ -61,10 +61,10 @@ const CustomDrawer = (props) => {
                 }}
               >
                 <FontAwesome5 name="user-circle" size={18} color={"white"} />
-                <Text style={{ marginLeft: 10, color: "white" }}>Teacher</Text>
-              </View>
-              {item.image ? (
-                <Image
+                <Text style={{ marginLeft: 10, color: "white" }}>Student</Text>
+                </View>
+                {item.image ? (
+                  <Image
                   style={{
                     width: 80,
                     height: 80,
@@ -75,10 +75,10 @@ const CustomDrawer = (props) => {
                     uri: `https://markazback2.onrender.com/${item.image}`,
                   }}
                 />
-              ) : (
+                ) : (
                 <Image
-                  style={{
-                    width: 80,
+                style={{
+                  width: 80,
                     height: 80,
                     borderRadius: 40,
                     marginBottom: 10,
@@ -87,10 +87,11 @@ const CustomDrawer = (props) => {
                     uri: "https://icon-library.com/images/no-user-image-icon/no-user-image-icon-27.jpg",
                   }}
                 />
-              )}
-              <Text style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
+                )}
+                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
                 {item.username}
-              </Text>
+                </Text>
+                <Text style={{ color: 'white' }}>+998(99)999-99-99</Text>
               <View>
                 <View style={{ flexDirection: "row" }}>
                   {item.balance === 0 ? (

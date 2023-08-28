@@ -21,8 +21,7 @@ const ApplicationScreen = () => {
     const [Purchase, setPurchase] = useState("");
     const Application1 = async () => {
       const tokenUser = await AsyncStorage.getItem("token")
-      const parseToken = JSON.parse(tokenUser)
-
+ 
       var data = {
         fullname: fullName,
         email: Email,
@@ -31,7 +30,7 @@ const ApplicationScreen = () => {
       };
       axios
         .post("https://markazback2.onrender.com/api/call_me", data, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           alert("succes");

@@ -8,6 +8,9 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,8 +26,13 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import HelpScreen from './HelpSreen'
 import { Entypo, Feather ,MaterialCommunityIcons } from '@expo/vector-icons';
 import ApplicationScreen from "./ApplicationScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import { useNavigation } from "react-router-native";
+import IndexNavigation from "../Navigation";
+import NavigationsBar from '../../src/Navigation/index'
+import AppCopy from "./AppCopy";
 
-
+const Tabs = createStackNavigator()
 const Tab = createMaterialTopTabNavigator();
 const Drawer = createDrawerNavigator();
 const Bonss = () => {
@@ -229,10 +237,9 @@ const ProfilePage = (props) => {
     setLoader(null);
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-      axios
+       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -247,11 +254,10 @@ const ProfilePage = (props) => {
   useEffect(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
-
+ 
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -372,11 +378,10 @@ const EditProfile = (props) => {
     })();
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
-
+ 
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setUser(res.data);
@@ -454,13 +459,12 @@ const EditProfile = (props) => {
       email: "halilovabdurahim13@gmail.com",
     };
     const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
     axios
       .put(
         `https://markazback2.onrender.com/auth/oneuser/${userMap.id}/`,
         data2,
-        { headers: { Authorization: "Bearer " + parseToken } }
+        { headers: { Authorization: "Bearer " + tokenUser } }
       )
       .then((res) => {
         Alert.alert("Succes", "You edited profile!", [
@@ -616,6 +620,173 @@ const EditProfile = (props) => {
   );
 };
 
+
+const PageLoginn = (props) => {
+  const [state, setState] = useState(null);
+  const [username, setUsername] = useState("alibeliy777777@gmail.com");
+  const [password, setPassword] = useState("bel1y4442");
+  const height = Dimensions.get("window");
+  // const getLocal = async () => {
+  //   // await AsyncStorage.clear()
+  //   var value = await AsyncStorage.getItem("pageNumber");
+  //   // alert(value);
+  //   setState(value ? value : null);
+  // };
+  // useEffect(() => {
+  //   getLocal();
+  //   // console.log(height.height);
+  // });
+  const handleChangeUsername = (text) => {
+    setUsername(text);
+  };
+  const handleChangePassword = (text) => {
+    setPassword(text);
+  };
+
+  const onSave = async () => {
+    var data = new FormData();
+    data.append("email", username);
+    data.append("password", password);
+    var a = await axios
+      .post("https://markazback2.onrender.com/auth/login", {
+        email: username,
+        password: password,
+      })
+      .then((res) => {
+        AsyncStorage.setItem("token", JSON.stringify(res.data.access));
+        axios
+          .get("https://markazback2.onrender.com/auth/oneuser", {
+            headers: { Authorization: "Bearer " + res.data.access },
+          })
+          .then((ress) => {
+            ress.data.map((item) => {
+              if (item.position == 1) {
+                AsyncStorage.setItem(
+                  "pageNumber",
+                  JSON.stringify(item.position)
+                );
+                props.navigation.replace("IndexNavigation");
+              } else if (item.position == 2) {
+                AsyncStorage.setItem(
+                  "pageNumber",
+                  JSON.stringify(item.position)
+                );
+                props.navigation.replace("Navigation");
+              } else {
+                AsyncStorage.setItem("pageNumber", null);
+                alert('bunday shaxs yo"q');
+                setState(null);
+              }
+            });
+          });
+      });
+    // a.data.access
+    //   ? (alert("Succes"),
+    //     setState(2),
+    //     await AsyncStorage.setItem("token", a.data.access))
+    //   : alert("Bunday shaxs yoq");
+
+    console.log(a.data);
+  };
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "android" ? "height" : "padding"}
+      style={{ flex: 1 }}
+      // enabled={1000}
+    >
+      {state == null ? (
+        <ScrollView style={{ flexGrow: 1 }}>
+          <View
+            style={{
+              minHeight: "100%",
+              marginTop: 70,
+              padding: 10,
+            }}
+          >
+            {height.height > 640 ? (
+              <Image
+                style={{ width: "100%", height: 200 }}
+                source={require("../../img/HowardLogo.png")}
+              />
+            ) : (
+              <Image
+                style={{ width: "100%", height: 170 }}
+                source={require("../../img/HowardLogo.png")}
+              />
+            )}
+            <View style={{ marginTop: 50 }}>
+              <View style={{ marginTop: 10 }}>
+                <Text style={{ fontSize: 17, marginLeft: 2 }}>Login</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    borderColor: "dodgerblue",
+                    borderRadius: 5,
+                    paddingLeft: 10,
+                    fontSize: 17,
+                  }}
+                  onChangeText={handleChangeUsername}
+                />
+              </View>
+              <View style={{ marginTop: 10, marginBottom: 20 }}>
+                <Text style={{ fontSize: 17, marginLeft: 2 }}>Password</Text>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderWidth: 1,
+                    borderColor: "dodgerblue",
+                    borderRadius: 5,
+                    paddingLeft: 10,
+                    fontSize: 17,
+                  }}
+                  onChangeText={handleChangePassword}
+                  secureTextEntry={true}
+                />
+              </View>
+            </View>
+            <Text>{username + " " + password}</Text>
+            <Button title="Вход" onPress={onSave} />
+          </View>
+        </ScrollView>
+      ) : (
+        <View
+          style={{
+            width: "100%",
+            height: 700,
+            flex: 1,
+            justifyContent: "center",
+            marginTop: 30,
+          }}
+        >
+          {state == 1 ? (
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              <IndexNavigation />
+            </View>
+          ) : (
+            <NavigationContainer>
+              <NavigationsBar />
+            </NavigationContainer>
+          )}
+        </View>
+      )}
+    </KeyboardAvoidingView>
+  );
+};
+const Pageee = () => {
+  return (
+    <Tabs.Navigator>
+      <Tabs.Screen name="Login" options={{ headerShown: false }} component={PageLoginn} />
+    </Tabs.Navigator>
+  );
+};
+
 export default function Profile() {
   const [setts, setSetts] = useState();
   const page = () => {
@@ -684,6 +855,27 @@ export default function Profile() {
           ),
         }}
       />
+      <Drawer.Screen
+          name="LogOut"
+          component={AppCopy}
+          options={{
+            headerShown: false,
+            drawerIcon: ({ focused }) =>
+              focused ? (
+                <MaterialCommunityIcons
+                  name="application-edit"
+                  size={24}
+                  color="black"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="application-edit-outline"
+                  size={24}
+                  color="black"
+                />
+              ),
+          }}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );

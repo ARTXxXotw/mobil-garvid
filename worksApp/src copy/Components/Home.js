@@ -118,13 +118,12 @@ const BonusPage = (props) => {
     const keyOlish = async () => {
       const courseId2 = await AsyncStorage.getItem("courseId");
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
       axios
         .get(
           `https://markazback2.onrender.com/api/course_data_category/course/${courseId2}/`,
           {
-            headers: { Authorization: "Bearer " + parseToken },
+            headers: { Authorization: "Bearer " + tokenUser },
           }
         )
         .then((res) => {
@@ -172,8 +171,7 @@ const ViewPage = (props) => {
   const onRefresh = React.useCallback(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-      
+       
       // axios
       //   .get("https://markazback2.onrender.com/auth/oneuser", {
       //     headers: { Authorization: "Bearer " + tokenUser },
@@ -245,13 +243,13 @@ const ViewPage = (props) => {
       // };
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           res.data.map((item) => {
             axios
               .get(`https://markazback2.onrender.com/api/mycourse/${item.id}`, {
-                headers: { Authorization: "Bearer " + parseToken },
+                headers: { Authorization: "Bearer " + tokenUser },
               })
               .then((res2) => {
                 // if (res2.data) {
@@ -280,8 +278,7 @@ const ViewPage = (props) => {
   useEffect(() => {
     const keyOlish = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
       // axios
       //   .get("https://markazback2.onrender.com/auth/oneuser", {
       //     headers: { Authorization: "Bearer " + tokenUser },
@@ -353,13 +350,13 @@ const ViewPage = (props) => {
       // };
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           res.data.map((item) => {
             axios
               .get(`https://markazback2.onrender.com/api/mycourse/${item.id}`, {
-                headers: { Authorization: "Bearer " + parseToken },
+                headers: { Authorization: "Bearer " + tokenUser },
               })
               .then((res2) => {
                 console.log(res2.data);
@@ -388,6 +385,7 @@ const ViewPage = (props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
+    <Text>asdasd</Text>
       {isLoading === null ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -565,13 +563,12 @@ const ViewPage2 = (props) => {
     const keyOlish = async () => {
       const courseId2 = await AsyncStorage.getItem("courseId");
       const tokenUser = await AsyncStorage.getItem("token");
-    const parseToken = JSON.parse(tokenUser)
-
+ 
       axios
         .get(
           `https://markazback2.onrender.com/api/course_data_category/course/${courseId2}/`,
           {
-            headers: { Authorization: "Bearer " + parseToken },
+            headers: { Authorization: "Bearer " + tokenUser },
           }
         )
         .then((res) => {

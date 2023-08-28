@@ -18,9 +18,9 @@ import News from "../Components/News";
 
 const Tab = createBottomTabNavigator();
 
-const index = ({ navigation }) => {
+const IndexNavigation = ({ navigation }) => {
   return (
-    // <NavigationContainer independent={true}>
+    <NavigationContainer independent={true}>
     <Tab.Navigator initialRouteName="HorwardDashboard">
       <Tab.Screen
         name="News"
@@ -133,6 +133,21 @@ const index = ({ navigation }) => {
           tabBarLabelStyle: {
             color: "black",
           },
+          headerRight: () => {
+            return (
+              <MaterialIcons
+                name="logout"
+                size={30}
+                color={"#000"}
+                style={{ marginRight: 10 }}
+                onPress={() => {
+                  props.navigation.navigate('LoginScreen')
+                  AsyncStorage.clear()
+                }}
+              />
+            );
+          },
+          tabBarShowLabel: false,
           tabBarIcon: ({ focused }) => {
             return focused ? (
               <FontAwesome name="user-circle" size={23} color={"#000"} />
@@ -144,8 +159,8 @@ const index = ({ navigation }) => {
         component={Profile}
       />
     </Tab.Navigator>
-    // </NavigationContainer>
+    </NavigationContainer>
   );
 };
 
-export default index;
+export default IndexNavigation;

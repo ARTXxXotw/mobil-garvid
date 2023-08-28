@@ -12,10 +12,10 @@ const NewsPage = (props) => {
     const News = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
      
-      const parseToken = JSON.parse(tokenUser)
+       console.log(tokenUser);
       axios
         .get("https://markazback2.onrender.com/api/knowladge", {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setNews(res.data);
@@ -147,11 +147,10 @@ const NewsScreen = (props) => {
     const ax = async () => {
       var newsid = await AsyncStorage.getItem("newsId");
       var tokenUser = await AsyncStorage.getItem("token");
-      const parseToken = JSON.parse(tokenUser)
-
+ 
       axios
         .get(`https://markazback2.onrender.com/api/knowladge/${newsid}`, {
-          headers: { Authorization: "Bearer " + parseToken },
+          headers: { Authorization: "Bearer " + tokenUser },
         })
         .then((res) => {
           setNews(res.data);

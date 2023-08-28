@@ -29,7 +29,7 @@ const ChatScreen = (props) => {
   const navigation = useNavigation();
   useEffect(() => {
     const getEmail = async () => {
-      const token = JSON.parse(await AsyncStorage.getItem("token"));
+      const token = await AsyncStorage.getItem("token")
       // console.log(token);
       axios
         .get("https://markazback2.onrender.com/auth/oneuser", {
@@ -110,9 +110,7 @@ const ChatScreen = (props) => {
         onPress={() => {
           console.log(email);
         }}
-      >
-        <Text>d</Text>
-      </TouchableOpacity>
+      ></TouchableOpacity>
     </ScrollView>
   );
 };

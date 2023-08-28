@@ -12,9 +12,8 @@ const CustomDrawer = (props) => {
     useEffect(() => {
         const keyOlish = async () => {
             const tokenUser = await AsyncStorage.getItem('token')
-            const parseToken = JSON.parse(tokenUser)
-
-            axios.get('https://markazback2.onrender.com/auth/oneuser', { headers: { "Authorization": "Bearer " + parseToken } }).then(res => {
+ 
+            axios.get('https://markazback2.onrender.com/auth/oneuser', { headers: { "Authorization": "Bearer " + tokenUser } }).then(res => {
                 setUser(res.data)
                 console.log(res.data);
             })
@@ -57,9 +56,6 @@ const CustomDrawer = (props) => {
                     <DrawerItemList {...props} />
                 </View>
             </DrawerContentScrollView>
-            <Button title='Log Out' onPress={() => {
-                Alert.alert('You Are Log Out!', 'If you log out no acc!', [{ text: 'yes', onPress: () => { AsyncStorage.clear() } }, { text: 'no', onPress: () => { console.log('no') } }])
-            }} />
             {/* <View style={{ width: '100%' }} onClick={() => alert('clicked!')}>
                 <View style={{ width: '100%', height: 50, backgroundColor: 'dodgerblue', padding: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <Ionicons name='log-out-outline' size={20} color={'white'} />

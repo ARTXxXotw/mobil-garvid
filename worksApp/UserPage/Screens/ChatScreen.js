@@ -23,7 +23,7 @@ const socket = io.connect("https://markazback2.onrender.com");
 const Stack = createStackNavigator();
 import { Feather, Ionicons } from "@expo/vector-icons";
 
-const ChatScreen = (props) => {
+const ChatScreen2 = (props) => {
   const [email, setEmail] = useState("");
   const [rooms, setRooms] = useState([]);
   const navigation = useNavigation();
@@ -433,10 +433,10 @@ const UserScreen = () => {
   );
 };
 
-const Chat = () => {
+const ChatScreen = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen2} />
       <Stack.Screen
         name="User"
         options={{
@@ -450,4 +450,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default ChatScreen;

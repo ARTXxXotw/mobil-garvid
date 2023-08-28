@@ -1,3 +1,20 @@
+// const NewsScreen = () => {
+//   return (
+//     <View>
+//       <Text>NewsScreen</Text>
+//     </View>
+//   )
+// }
+
+// export default NewsScreen
+
+
+
+
+
+
+
+
 import { View, Text, ScrollView, Image, Button, Linking } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,7 +29,8 @@ const NewsPage = (props) => {
     const News = async () => {
       const tokenUser = await AsyncStorage.getItem("token");
      
-       axios
+       console.log(tokenUser);
+      axios
         .get("https://markazback2.onrender.com/api/knowladge", {
           headers: { Authorization: "Bearer " + tokenUser },
         })
@@ -123,7 +141,7 @@ const NewsPage = (props) => {
     </ScrollView>
   );
 };
-const NewsScreen = (props) => {
+const News = (props) => {
   const [news, setNews] = useState([]);
   const [supportedURL, setSupportedURL] = useState("https://google.com");
 
@@ -248,7 +266,7 @@ const NewsScreen = (props) => {
     </View>
   );
 };
-const News = (props) => {
+const NewsScreen = (props) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -256,51 +274,8 @@ const News = (props) => {
         options={{ headerShown: false }}
         component={NewsPage}
       />
-      <Stack.Screen name="NewsScreen" component={NewsScreen} />
+      <Stack.Screen name="NewsScreen" component={News} />
     </Stack.Navigator>
   );
 };
-export default News;
-
-// import React, {useCallback} from 'react';
-// import {Alert, Button, Linking, StyleSheet, View} from 'react-native';
-
-// const supportedURL = 'https://google.com';
-
-// const unsupportedURL = 'slack://open?team=123456';
-
-// const OpenURLButton = ({url, children}) => {
-//   const handlePress = useCallback(async () => {
-//     // Checking if the link is supported for links with custom URL scheme.
-//     const supported = await Linking.canOpenURL(url);
-
-//     if (supported) {
-//       // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-//       // by some browser in the mobile
-//       await Linking.openURL(url);
-//     } else {
-//       Alert.alert(`Don't know how to open this URL: ${url}`);
-//     }
-//   }, [url]);
-
-//   return <Button title={children} onPress={handlePress} />;
-// };
-
-// const App = () => {
-//   return (
-//     <View style={styles.container}>
-//       <OpenURLButton url={supportedURL}>Open Supported URL</OpenURLButton>
-//       <OpenURLButton url={unsupportedURL}>Open Unsupported URL</OpenURLButton>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-// });
-
-// export default App;
+export default NewsScreen;

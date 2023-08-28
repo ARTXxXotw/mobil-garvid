@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Home from "../Components/Home";
@@ -13,12 +13,20 @@ import {
   Ionicons,
   FontAwesome5,
   FontAwesome,
+  MaterialIcons
 } from "@expo/vector-icons";
 import News from "../Components/News";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 
-const index = ({ navigation }) => {
+const index = (props) => {
+  useEffect(() => {
+    const value = AsyncStorage.getItem("token");
+    if (!value) {
+      props.navigation.replace("LoginScreen");
+    }
+  });
   return (
     // <NavigationContainer independent={true}>
     <Tab.Navigator initialRouteName="HorwardDashboard">
@@ -128,10 +136,24 @@ const index = ({ navigation }) => {
         name="Profile"
         options={{
           tabBarHideOnKeyboard: true,
-          headerShown: false,
+          // headerShown: false,
+          headerRight: () => {
+            return (
+              <MaterialIcons
+                name="logout"
+                size={30}
+                color={"#000"}
+                style={{ marginRight: 10 }}
+                onPress={() => {
+                  AsyncStorage.clear()
+                  props.navigation.navigate('LoginScreen')
+                }}
+              />
+            );
+          },
           tabBarShowLabel: false,
-          tabBarLabelStyle: {
-            color: "black",
+          tabBarLabeStyle: {
+            display: "none",
           },
           tabBarIcon: ({ focused }) => {
             return focused ? (
