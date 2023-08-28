@@ -12,7 +12,7 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef,useCallback } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -21,7 +21,7 @@ import io from "socket.io-client";
 import { useNavigation, useRoute } from "@react-navigation/native";
 const socket = io.connect("https://markazback2.onrender.com");
 const Stack = createStackNavigator();
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons,AntDesign } from "@expo/vector-icons";
 
 const ChatScreen = (props) => {
   const [email, setEmail] = useState("");
@@ -118,9 +118,11 @@ const ChatScreen = (props) => {
 
 const UserScreen = () => {
   const [namePage, setNamePage] = useState("User");
+  const [idMessageEdit, setIdMessageEdit] = useState("");
   const [currentMessage, setCurrentMessage] = useState("sms");
   const [messageList, setMessageList] = useState([]);
-  const [styles, setStyles] = useState(true);
+  const [styles, setStyles] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
   const height = Dimensions.get("window");
   const route = useRoute();
   const navigation = useNavigation();
@@ -165,57 +167,67 @@ const UserScreen = () => {
     scrollViewRef.current.scrollToEnd({ animated: true });
   }, [socket]);
 
-  const handle = (value) => {
-    setCurrentMessage(value);
-  };
   const sendMessage = async () => {
-    if (currentMessage !== "") {
-      const room = route.params.room;
-      const email = route.params.email;
-      const messageData = {
-        room: room,
-        author: email,
-        message: currentMessage,
-        time:
-          new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
-      };
-
-      socket.emit("send_message", messageData);
-      setMessageList((list) => [...list, messageData]);
-      setCurrentMessage("");
-
-      console.log(messageData);
-      console.log(currentMessage);
+    
+    if (styles===true) {
+        const token = JSON.parse(await AsyncStorage.getItem("token"));
+        // var formdata = new FormData();
+        // formdata.append("message",currentMessage);
+        var data = {
+          message:currentMessage
+        }
+        console.log(token);
+        axios
+          .put(`https://markazback2.onrender.com/auth/messages/${idMessageEdit}`,data, {
+            headers: { Authorization: "Bearer " + token },
+          })
+          .then((res1) => {
+            Alert.alert("ishladi")
+const get = async () => {
+           await  socket.on("load_messages", (data) => {
+               setMessageList(data)
+              // console.log(data,"load messages");
+            }); }
+            get()
+          })
+          .catch((err) => {
+            console.log(err);
+            Alert.alert("ishlamadi")
+            Alert.alert(idMessageEdit)
+          });
     }
+    if (styles===false) {
+      if (currentMessage !== "") {
+        const room = route.params.room;
+        const email = route.params.email;
+        const messageData = {
+          room: room,
+          author: email,
+          message: currentMessage,
+          time:
+            new Date(Date.now()).getHours() +
+            ":" +
+            new Date(Date.now()).getMinutes(),
+        };
+  
+        socket.emit("send_message", messageData);
+        setMessageList((list) => [...list, messageData]);
+        setCurrentMessage("");
+  
+        console.log(messageData);
+        console.log(currentMessage);
+      }
+    }
+
   };
-  // const scrollBottomEnd = async () => {
-  //   scrollViewRef.current.scrollToEnd({animated: true})
-  // };
-  // useEffect(() => {
-
-  //     scrollBottomEnd
-
-  // }, []);
-  // useEffect(() => {
-  //   scrollViewRef.current.scrollToEnd({animated: true});
-  // }, [messageList.length]);
-  // const InputBox = () => {
-  //   return (
-
-  //   );
-  // };
-
   return (
-    <View style={{ paddingBottom: styles == true ? 100 : 50, }}>
+    <View style={{ paddingBottom: styles == true ? 90 : 50, }}>
       <ImageBackground
         source={{
           uri: "https://i.pinimg.com/736x/d2/bf/d3/d2bfd3ea45910c01255ae022181148c4.jpg",
         }}
         resizeMode="cover"
       >
-        {/* <Button           onPress={() => scrollBottomEnd()} title="Scroll to bottom"/> */}
         <ScrollView
           ref={scrollViewRef}
           onContentSizeChange={() =>
@@ -225,6 +237,7 @@ const UserScreen = () => {
         >
           {messageList.map((item) => {
             return (
+
               <View style={{ marginBottom: 10, marginTop: 20 }}>
                 {(() => {
                   if (item.author === route.params.email) {
@@ -261,7 +274,19 @@ const UserScreen = () => {
                           }}
                         >
                           {item.time}
+                          { "id:" +item.id}
                         </Text>
+                        <TouchableOpacity onPress={() => {
+                          if (styles===true) {
+                            setStyles(false)
+                          }else if (styles===false) {
+                            setStyles(true)
+                          }
+                          setIdMessageEdit(item.id)
+                          }}>
+                        <AntDesign name="edit" size={24} color="black" />
+                        </TouchableOpacity>
+          
                       </View>
                     );
                   } else {
@@ -297,81 +322,20 @@ const UserScreen = () => {
                             right: 10,
                           }}
                         >
-                          {item.time}
+                          {item.time  }
+                          {""}
+                          { "id:" +item.id}
                         </Text>
                       </View>
                     );
                   }
                 })()}
               </View>
+
+
             );
           })}
-          {/* <View style={{ marginLeft: "50%", marginBottom: 10, marginTop: 20 }}>
-            <View
-              style={{
-                backgroundColor: "cornflowerblue",
-                width: "100%",
-                // height: 50,
-                flex: 1,
-                justifyContent: "center",
-                padding: 10,
-                borderRadius: 15,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "white",
-                  height: "auto",
-                  paddingBottom: 15,
-                }}
-              >
-                halilov abdurahim halilov abdurahim
-              </Text>
-              <Text
-                style={{
-                  position: "absolute",
-                  color: "white",
-                  fontSize: 12,
-                  bottom: 5,
-                  right: 10,
-                }}
-              >
-                2022-02-20
-              </Text>
-            </View>
-          </View>
-          <View>
-            <View
-              style={{
-                backgroundColor: "darkseagreen",
-                minWidth: "30%",
-                maxWidth: "60%",
-                height: "auto",
-                flex: 1,
-                justifyContent: "center",
-                padding: 10,
-                borderRadius: 15,
-                width: "100%",
-                marginTop: 20,
-              }}
-            >
-              <Text style={{ fontSize: 16, color: "white", height: "auto" }}>
-                asdasasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd
-              </Text>
-              <Text
-                style={{
-                  position: "absolute",
-                  color: "white",
-                  fontSize: 12,
-                  bottom: 5,
-                  right: 10,
-                }}
-              >
-                2022-02-20
-              </Text>
-            </View>
-          </View> */}
+ 
         </ScrollView>
       </ImageBackground>
       <View
